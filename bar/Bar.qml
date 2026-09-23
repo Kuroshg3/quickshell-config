@@ -96,10 +96,8 @@ Scope {
             screen: modelData
             visible: root.barVisible
 
-            property var per_monitor_scale_num: Math.pow(modelData.width / 1920, 0.3).toFixed(2)
-
             function scale_per_monitor(size) {
-                return Math.round(size * per_monitor_scale_num);
+                return Math.round(size * Math.pow(modelData.width / 1920, 0.3).toFixed(2));
             }
 
             anchors {
