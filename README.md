@@ -1,40 +1,31 @@
 # my quickshell config
-a personal Hyprland desktop config built with [Quickshell](https://quickshell.outfoxxed.me/). status bar, app launcher, notification daemon, OSD, wallpaper manager, and a theme switcher with 206 themes. each piece is its own module and works independently, so feel free to grab only the parts you need.
 
-i hope it's helpful as a starting point or reference. if you have questions or ide
+a personal Hyprland desktop config built with [Quickshell](https://quickshell.org). status bar, app launcher, notification daemon, OSD, wallpaper manager, and a theme switcher with 206 themes. each piece is its own module and works independently, so feel free to grab only the parts you need.
 
-as, don't hesitate to open an issue - happy to chat.
-
-<img width="1920" height="111" alt="image" src="https://github.com/user-attachments/assets/06d824ae-cf21-4c78-919c-1604f1c0a2dc" />
-<br/>
-<img width="405" height="146" alt="image" src="https://github.com/user-attachments/assets/40c9b11a-abf2-4e9b-bf85-ec44ea67d69d" />
-<br/>
-<img width="601" height="495" alt="image" src="https://github.com/user-attachments/assets/40c46613-dc24-461a-9075-33ffea221716" />
-
-
-https://github.com/user-attachments/assets/55c47c05-34b6-402c-aea7-42a369b86828
-
+i hope it's helpful as a starting point or reference. if you have questions or ideas, don't hesitate to open an issue - happy to chat.
 
 ## what's included
 
-| Module | What it does |
-|--------|-------------|
-| **Bar** | clock, workspaces, active window title, volume, brightness, network, battery, system tray, now-playing indicator |
-| **App Launcher** | rofi drun-style application launcher |
-| **Notifications** | dunst-style notification daemon with popups |
-| **OSD** | on-screen display for volume and brightness changes, auto-hides |
-| **Theme Switcher** | 206 themes across 6 families, persists across restarts, or follow your wallpaper |
-| **Wallpaper Manager** | grid picker for wallpapers, preview, supports hyprpaper and swww |
-| **Monitor Manager** | visual `hyprctl` front-end for arranging, scaling, rotating, mirroring, and disabling displays |
-| **Caffeine Toggle** | keeps the screen from locking or dimming while it's on - a corner badge you switch on for stretches where you're reading more than typing |
+| Module                | What it does                                                                                                                              |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Bar**               | clock, workspaces, active window title, volume, brightness, network, battery, system tray, now-playing indicator                          | now-on-screen-window's-workspace indicator (included speacial workspaces) |
+| **App Launcher**      | rofi drun-style application launcher                                                                                                      |
+| **Notifications**     | dunst-style notification daemon with popups                                                                                               |
+| **OSD**               | on-screen display for volume and brightness changes, auto-hides                                                                           |
+| **Theme Switcher**    | 206 themes across 6 families, persists across restarts, or follow your wallpaper                                                          |
+| **Wallpaper Manager** | grid picker for wallpapers, preview, supports hyprpaper and swww                                                                          |
+| **Monitor Manager**   | visual `hyprctl` front-end for arranging, scaling, rotating, mirroring, and disabling displays                                            |
+| **Caffeine Toggle**   | keeps the screen from locking or dimming while it's on - a corner badge you switch on for stretches where you're reading more than typing |
 
 ## prerequisites
 
 these are needed regardless of which modules you use:
 
-- [Quickshell](https://quickshell.outfoxxed.me/) + Qt 6
+- [Quickshell](https://quickshell..org/) + Qt 6
 - [Hyprland](https://hyprland.org/)
-- a [Nerd Font](https://www.nerdfonts.com/) (i use Hack Nerd Font - swap it in the QML files if you prefer another)
+- [Nerd Font](https://www.nerdfonts.com/) (i use JetBrainsMono Nerd Font , Hack Nerd Font and ProFont IIx Nerd Font - swap it in the QML files if you prefer another)
+- [Tsushima3 Font](https://fontmeme.com/fonts/tsushima-font)
+- a Nvidia driver (for nvidia-smi tool to send the GPU temperature through the bar. you can ignore it by editing bar/SystemInfo.qml and bar/Bar.qml)
 
 optional, depending on which modules you use:
 
@@ -50,7 +41,7 @@ optional, depending on which modules you use:
 if you'd like the full setup:
 
 ```bash
-git clone https://github.com/doannc2212/quickshell-config ~/.config/quickshell
+git clone https://github.com/kuroshg3/quickshell-config ~/.config/quickshell
 quickshell
 ```
 
@@ -78,6 +69,7 @@ Bar {}
 the bar will use its built-in Tokyo Night Night colors by default. to wire it up with the theme switcher instead, pass `theme: yourThemeObject`.
 
 you can also toggle the bar via IPC:
+
 ```
 qs ipc call bar toggle
 ```
@@ -97,9 +89,8 @@ AppLauncher {}
 
 3. bind a key in `hyprland.conf`:
 
-```
-bind = SUPER, D, exec, qs ipc call launcher toggle
-```
+````
+hl.bind("<key>", hl.dsp.exec_cmd("qs ipc call launcher toggle"))
 
 ### notifications
 
@@ -114,16 +105,17 @@ a built-in notification daemon - replaces dunst/mako. popups appear in the top-r
 import "notifications"
 
 NotificationPopup {}
-```
+````
 
 3. optionally bind IPC commands in `hyprland.conf`:
 
 ```
-bind = SUPER, N, exec, qs ipc call notifications dismiss_all
-bind = SUPER SHIFT, N, exec, qs ipc call notifications dnd_toggle
+hl.bind("<key>", hl.dsp.exec_cmd("qs ipc call notifications dismiss_all")
+hl.bind("<key>", hl.dsp.exec_cmd("qs ipc call notifications dnd_toggle")
 ```
 
 features:
+
 - urgency-based accent colors (critical, normal, low)
 - app icons for common apps (discord, firefox, spotify, etc.)
 - action buttons from the notification
@@ -173,7 +165,7 @@ ThemeSwitcher {
 3. bind a key in `hyprland.conf`:
 
 ```
-bind = SUPER, T, exec, qs ipc call theme toggle
+hl.bind("<key>", hl.dsp.exec_cmd("qs ipc call theme toggle"))
 ```
 
 4. add this to your kitty config so the theme switcher can update kitty colors:
@@ -201,6 +193,7 @@ if you start quickshell through another launcher, autostart mechanism, or compos
 without these variables, the theme switcher continues to use the default GTK setup.
 
 available theme families:
+
 - **Tokyo Night** - Night, Storm, Moon, Light
 - **Catppuccin** - Mocha, Macchiato, Frappe, Latte
 - **Zen** - Dark, Light
@@ -212,7 +205,7 @@ available theme families:
 
 the switcher can generate a theme from an image instead of using a curated one.
 
-**extra dependencies:** [`matugen`](https://github.com/InioX/matugen) *or* [`wallust`](https://codeberg.org/explosion-mental/wallust) - auto-detected (force one with `WALLPAPER_THEME_TOOL=matugen|wallust`).
+**extra dependencies:** [`matugen`](https://github.com/InioX/matugen) _or_ [`wallust`](https://codeberg.org/explosion-mental/wallust) - auto-detected (force one with `WALLPAPER_THEME_TOOL=matugen|wallust`).
 
 generate a palette from an image and switch to it:
 
@@ -261,8 +254,8 @@ MonitorManager {}
 3. bind a key in `hyprland.conf`:
 
 ```
-bind = SUPER, O, exec, qs ipc call monitors toggle
-bind = SUPER SHIFT, O, exec, qs ipc call monitors refresh
+hl.bind("<key>", hl.dsp.exec_cmd("qs ipc call monitors toggle")
+hl.bind("<key>", hl.dsp.exec_cmd("qs ipc call monitors refresh")
 ```
 
 4. add this line to your `hyprland.conf` so your layout is restored on login:
@@ -272,6 +265,7 @@ source = ~/.config/hypr/monitors.conf
 ```
 
 features:
+
 - visual layout canvas with drag-to-arrange monitors
 - per-output resolution, scale, rotation, position, enable/disable, and mirror controls
 
@@ -293,10 +287,11 @@ CaffeineToggle {}
 3. bind a key in `hyprland.conf`:
 
 ```
-bind = SUPER, C, exec, qs ipc call idle toggle
+hl.bind("<key>", hl.dsp.exec_cmd("qs ipc call idle toggle"))
 ```
 
 features:
+
 - corner badge that fades in only while active, and fades back out a couple seconds after you toggle it
 - click the badge to turn it off without reaching for the keybind
 - deliberately doesn't persist across restarts - i'd rather re-toggle it once in a while than have a shell crash quietly leave the screen from sleeping forever
@@ -304,7 +299,7 @@ features:
 ## tweaking
 
 - **colors** - all colors live in `theme-switcher/Theme.qml`. pick a theme via the switcher, or add your own by appending to the `themes` array.
-- **font** - edit the default `font: "Your Font"` at the top of the entry file.   
+- **font** - edit the default `font: "Your Font"` at the top of the entry file.
 - **layout** - rearrange widgets in `bar/Bar.qml`.
 - **polling rate** - change the interval in `bar/SystemInfo.qml` (default 2s).
 - **extra bar widgets** - CPU, memory, and temperature widgets are already written in `bar/Bar.qml` but commented out. uncomment them if you'd like them back (requires `top`, `free`, and `sensors`).
@@ -312,7 +307,13 @@ features:
 
 ## acknowledgments
 
-this wouldn't exist without the wonderful work behind [Quickshell](https://quickshell.outfoxxed.me/), [Hyprland](https://hyprland.org/), and the theme creators:
+This project is built upon/based on the excellent work of [doannc2212](https://github.com/doannc2212).
+
+I made big changes from the original project based on my taste and learned various details in Quickshell and QML languauge through that in this project; hope you enjoy
+
+- Original Repostitory: [doannc2212/quickshell-config](https://github.com/doannc2212/quickshell-config)
+
+this wouldn't exist without the wonderful work behind [Quickshell](https://quickshell.org/), [Hyprland](https://hyprland.org/), and the theme creators:
 
 - [Tokyo Night](https://github.com/enkia/tokyo-night-vscode-theme) by enkia - 4 themes (Night, Storm, Moon, Light)
 - [Catppuccin](https://github.com/catppuccin/catppuccin) by the Catppuccin team - 4 themes (Mocha, Macchiato, Frappe, Latte)
