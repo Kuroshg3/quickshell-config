@@ -15,7 +15,7 @@ Singleton {
   Process {
     id: scanner
     command: ["sh", "-c",
-      "find ~/Pictures/Wallpapers ~/Pictures -maxdepth 2 -type f \\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \\) 2>/dev/null | sort -u | head -200"
+      "find ~/Pictures/Wallpapers -maxdepth 2 -type f \\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \\) 2>/dev/null | sort -u | head -200"
     ]
     running: false
     stdout: SplitParser {
@@ -60,6 +60,13 @@ Singleton {
     saveProcess.running = true;
   }
 
+  function setThemeByWallpaper(wallpaperPath) {
+    genThemeProcess.command = ["sh", Quickshell.env("HOME") + "/.config/quickshell/theme-switcher/wallpaper-theme/set.sh" , wallpaperPath ];
+    // genThemeProcess.command = ["hyprctl", "notify", "6", "3000", "0", wallpaperPath];
+
+    genThemeProcess.running = true;
+  }
+
   Process {
     id: setProcess
     command: []
@@ -68,6 +75,12 @@ Singleton {
 
   Process {
     id: saveProcess
+    command: []
+    running: false
+  }
+
+  Process {
+    id: genThemeProcess
     command: []
     running: false
   }

@@ -11,6 +11,7 @@ Scope {
 
   property string searchText: ""
   property string previewPath: ""
+  property bool generateApplyTheme: true 
 
   IpcHandler {
     target: "wallpaper"
@@ -68,9 +69,9 @@ Scope {
     // Main wallpaper picker box
     Rectangle {
       anchors.centerIn: parent
-      width: 720
-      height: 560
-      radius: 16
+      width: parent.width * 0.5
+      height: parent.height * 0.75
+      radius: 8
       color: root.theme.bgBase
       border.color: root.theme.bgBorder
       border.width: 1
@@ -93,7 +94,7 @@ Scope {
           Text {
             text: "󰸉  Wallpaper"
             color: root.theme.accentPrimary
-            font.pixelSize: 14
+            font.pixelSize: 18
             font.family: root.font
             font.bold: true
           }
@@ -103,7 +104,7 @@ Scope {
           Text {
             text: root.filteredWallpapers.length + " images"
             color: root.theme.textMuted
-            font.pixelSize: 11
+            font.pixelSize: 14
             font.family: root.font
           }
 
@@ -119,8 +120,8 @@ Scope {
             Text {
               anchors.centerIn: parent
               text: "󰑐"
-              color: root.theme.textMuted
-              font.pixelSize: 14
+              color: root.theme.accentPrimary
+              font.pixelSize: 20
               font.family: root.font
             }
 
@@ -213,7 +214,7 @@ Scope {
             Rectangle {
               anchors.fill: parent
               anchors.margins: 4
-              radius: 8
+              radius: 3
               color: root.theme.bgSurface
               border.color: WallpaperService.currentWallpaper === modelData ? root.theme.accentPrimary : (imgHover.containsMouse ? root.theme.bgBorder : "transparent")
               border.width: WallpaperService.currentWallpaper === modelData ? 2 : 1
@@ -255,7 +256,7 @@ Scope {
                   anchors.centerIn: parent
                   text: modelData.split("/").pop()
                   color: "#ffffff"
-                  font.pixelSize: 9
+                  font.pixelSize: 12
                   font.family: root.font
                   elide: Text.ElideMiddle
                   width: parent.width - 8
@@ -268,17 +269,17 @@ Scope {
                 anchors.top: parent.top
                 anchors.right: parent.right
                 anchors.margins: 6
-                width: 20
-                height: 20
-                radius: 10
-                color: root.theme.accentGreen
+                width: 25
+                height: 25
+                radius: 6
+                color: root.theme.bgBase
                 visible: WallpaperService.currentWallpaper === modelData
 
                 Text {
                   anchors.centerIn: parent
-                  text: ""
-                  color: root.theme.bgBase
-                  font.pixelSize: 12
+                  text: "✅"
+                  color: root.theme.accentGreen
+                  font.pixelSize: 32
                   font.family: root.font
                 }
               }
@@ -294,6 +295,9 @@ Scope {
                     root.previewPath = modelData;
                   } else {
                     WallpaperService.setWallpaper(modelData);
+                    if (root.generateApplyTheme) {
+                      WallpaperService.setThemeByWallpaper(modelData);
+                    }
                   }
                 }
               }
@@ -323,7 +327,7 @@ Scope {
               width: hintClick.width + 8; height: 18; radius: 4; color: root.theme.bgSurface
               Text { id: hintClick; anchors.centerIn: parent; text: "click"; color: root.theme.textMuted; font.pixelSize: 10; font.family: root.font }
             }
-            Text { text: "apply"; color: root.theme.textMuted; font.pixelSize: 10; font.family: root.font; anchors.verticalCenter: parent.verticalCenter }
+            Text { text: "apply"; color: root.theme.textMuted; font.pixelSize: 12; font.family: root.font; anchors.verticalCenter: parent.verticalCenter }
           }
 
           Row {
@@ -332,15 +336,64 @@ Scope {
               width: hintRight.width + 8; height: 18; radius: 4; color: root.theme.bgSurface
               Text { id: hintRight; anchors.centerIn: parent; text: "right-click"; color: root.theme.textMuted; font.pixelSize: 10; font.family: root.font }
             }
-            Text { text: "preview"; color: root.theme.textMuted; font.pixelSize: 10; font.family: root.font; anchors.verticalCenter: parent.verticalCenter }
+            Text { text: "preview"; color: root.theme.textMuted; font.pixelSize: 12; font.family: root.font; anchors.verticalCenter: parent.verticalCenter }
           }
 
           Row {
             spacing: 4
-            Text { text: "Backend: " + WallpaperService.backend; color: root.theme.textMuted; font.pixelSize: 10; font.family: root.font; anchors.verticalCenter: parent.verticalCenter }
+            Text { text: "Backend: " + WallpaperService.backend; color: root.theme.textMuted; font.pixelSize: 12; font.family: root.font; anchors.verticalCenter: parent.verticalCenter }
           }
 
           Item { Layout.fillWidth: true }
+
+          // generate theme checkbox
+          Row {
+            spacing: 8
+            Text {
+              id: checkboxText
+              anchors.verticalCenter: parent.verticalCenter
+              text: "Generate Theme:"
+              font.pixelSize: 12
+              font.family: root.font
+              color: root.theme.textPrimary
+            }
+            Rectangle {
+              id: checkboxOutterRec
+              property real margin: 3
+              width:  checkboxInnerRec.width * 3
+              height: checkboxInnerRec.height + 6
+              radius: 4
+              color: refreshHover.containsMouse ? root.theme.bgHover : "transparent"
+              Accessible.role: Accessible.Button
+              Accessible.name: "generate theme"
+              border.color: checkboxMouseArea.containsMouse ? root.theme.accentPrimary : root.theme.bgBorder
+              border.width: 1
+              Rectangle {
+                id: checkboxInnerRec
+                anchors.verticalCenter: parent.verticalCenter
+                x: (root.generateApplyTheme)? parent.width - width - parent.margin : parent.margin 
+                width: 14
+                height: 14
+                radius: 3
+                color: (root.generateApplyTheme)? root.theme.accentPrimary: root.theme.textMuted
+                Behavior on x {
+                  NumberAnimation {
+                    duration: 150
+                    easing.type: Easing.OutCubic
+                  }
+                }
+              }
+              MouseArea {
+                id: checkboxMouseArea
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                  root.generateApplyTheme = !root.generateApplyTheme
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -372,23 +425,23 @@ Scope {
         anchors.bottomMargin: 40
         width: applyRow.width + 32
         height: 40
-        radius: 20
+        radius: 8
         color: root.theme.accentPrimary
         Accessible.role: Accessible.Button
-        Accessible.name: "Apply wallpaper"
+        Accessible.name: "Apply wallpaper Button"
 
         Row {
           id: applyRow
           anchors.centerIn: parent
           spacing: 8
 
-          Text {
-            text: ""
-            color: root.theme.bgBase
-            font.pixelSize: 14
-            font.family: root.font
-            anchors.verticalCenter: parent.verticalCenter
-          }
+          // Text {
+          //   text: ""
+          //   color: root.theme.bgBase
+          //   font.pixelSize: 14
+          //   font.family: root.font
+          //   anchors.verticalCenter: parent.verticalCenter
+          // }
           Text {
             text: "Apply Wallpaper"
             color: root.theme.bgBase
@@ -404,10 +457,15 @@ Scope {
           cursorShape: Qt.PointingHandCursor
           onClicked: {
             WallpaperService.setWallpaper(root.previewPath);
+            if (root.generateApplyTheme) {
+              WallpaperService.setThemeByWallpaper(root.previewPath);
+            }
             root.previewPath = "";
           }
         }
       }
+
+      // theme also change checkbox
     }
   }
 }
