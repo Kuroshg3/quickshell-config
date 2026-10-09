@@ -89,8 +89,8 @@ Scope {
     Rectangle {
       id: launcherBox
       anchors.centerIn: parent
-      width: 580
-      height: 480
+      width: launcherPanel.width * 0.4
+      height: launcherPanel.height * 0.6
       radius: 16
       color: root.theme.bgBase
       border.color: root.theme.bgBorder
@@ -104,8 +104,9 @@ Scope {
         // Header
         Text {
           text: "  Applications"
+          Layout.alignment: Qt.AlignCenter
           color: root.theme.accentPrimary
-          font.pixelSize: 14
+          font.pixelSize: 18
           font.family: root.font
           font.bold: true
         }
@@ -116,12 +117,8 @@ Scope {
           height: 44
           radius: 10
           color: root.theme.bgSurface
-          border.color: searchInput.activeFocus ? root.theme.accentPrimary : root.theme.bgBorder
+          border.color: root.theme.accentPrimary
           border.width: 1
-
-          Behavior on border.color {
-            ColorAnimation { duration: 150 }
-          }
 
           RowLayout {
             anchors.fill: parent
@@ -130,9 +127,9 @@ Scope {
             spacing: 10
 
             Text {
-              text: ""
+              text: ">"
               color: root.theme.textMuted
-              font.pixelSize: 16
+              font.pixelSize: 20
               font.family: root.font
               Layout.alignment: Qt.AlignVCenter
             }
@@ -142,7 +139,7 @@ Scope {
               Layout.fillWidth: true
               Layout.alignment: Qt.AlignVCenter
               color: root.theme.textPrimary
-              font.pixelSize: 15
+              font.pixelSize: 20
               font.family: root.font
               clip: true
               focus: true
@@ -189,7 +186,7 @@ Scope {
 
         // Results count
         Text {
-          text: resultsList.count + " application" + (resultsList.count !== 1 ? "s" : "")
+          text: resultsList.count + " application" + (resultsList.count !== 1 ? "s" : "") + " found!"
           color: root.theme.textMuted
           font.pixelSize: 11
           font.family: root.font
@@ -202,40 +199,26 @@ Scope {
           Layout.fillHeight: true
           model: filteredApps
           clip: true
-          spacing: 2
+          spacing: 5
           boundsBehavior: Flickable.StopAtBounds
           currentIndex: root.selectedIndex
           highlightMoveDuration: 150
           highlightMoveVelocity: -1
 
-          highlight: Rectangle {
-            radius: 8
-            color: root.theme.bgSelected
-            visible: root.selectedIndex >= 0
-
-            Rectangle {
-              width: 3
-              height: 24
-              radius: 2
-              color: root.theme.accentPrimary
-              anchors.left: parent.left
-              anchors.leftMargin: 2
-              anchors.verticalCenter: parent.verticalCenter
-            }
-          }
-
           delegate: Rectangle {
             id: delegateRoot
             required property var modelData
             required property int index
+            border.color: root.theme.bgBorder
+            border.width: 0.5
 
             Accessible.role: Accessible.Button
             Accessible.name: (modelData.name ?? "Application") + (modelData.genericName ? " - " + modelData.genericName : "")
 
             width: resultsList.width
-            height: 44
-            radius: 8
-            color: "transparent"
+            height: appsColumnLayout.height + 20
+            radius: 5
+            color: (root.selectedIndex === delegateRoot.index)? root.theme.bgSelected : "transparent"
 
             RowLayout {
               anchors.fill: parent
@@ -245,37 +228,41 @@ Scope {
 
               // App icon
               Item {
-                width: 28
-                height: 28
+                width: 32
+                height: 32
                 Layout.alignment: Qt.AlignVCenter
 
+                // Image {
+                //   source:
+                // }
                 IconImage {
                   anchors.fill: parent
-                  source: Quickshell.iconPath(delegateRoot.modelData.icon ?? "", true)
+                  source: Quickshell.iconPath(delegateRoot.modelData.icon, Quickshell.shellDir + "/unknown-app.png")
                   visible: (delegateRoot.modelData.icon ?? "") !== ""
                 }
 
                 // Fallback icon
-                Text {
-                  anchors.centerIn: parent
-                  text: ""
-                  color: root.theme.accentPrimary
-                  font.pixelSize: 20
-                  font.family: root.font
-                  visible: (delegateRoot.modelData.icon ?? "") === ""
-                }
+                // Text {
+                //   anchors.centerIn: parent
+                //   text: ""
+                //   color: root.theme.accentPrimary
+                //   font.pixelSize: 22
+                //   font.family: root.font
+                //   visible: (delegateRoot.modelData.icon ?? "") === ""
+                // }
               }
 
               // App info
               ColumnLayout {
+                id: appsColumnLayout
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
                 spacing: 1
 
                 Text {
                   text: delegateRoot.modelData.name ?? ""
-                  color: root.selectedIndex === delegateRoot.index ? root.theme.textPrimary : root.theme.textSecondary
-                  font.pixelSize: 13
+                  color: root.selectedIndex === delegateRoot.index ? root.theme.accentPrimary : root.theme.textSecondary
+                  font.pixelSize: 20
                   font.family: root.font
                   font.bold: root.selectedIndex === delegateRoot.index
                   elide: Text.ElideRight
@@ -284,13 +271,22 @@ Scope {
 
                 Text {
                   text: delegateRoot.modelData.genericName ?? delegateRoot.modelData.comment ?? ""
-                  color: root.theme.textMuted
-                  font.pixelSize: 11
+                  color: root.selectedIndex === delegateRoot.index ? root.theme.textPrimary : root.theme.textMuted
+                  font.pixelSize: 13
                   font.family: root.font
                   elide: Text.ElideRight
                   Layout.fillWidth: true
                   visible: text !== ""
                 }
+                // test
+                // Text {
+                //   text: Quickshell.iconPath(delegateRoot.modelData.icon, Quickshell.shellDir + "/unknown-app.png")
+                //   color: root.selectedIndex === delegateRoot.index ? root.theme.textPrimary : root.theme.textMuted
+                //   font.pixelSize: 13
+                //   font.family: root.font
+                //   elide: Text.ElideRight
+                //   Layout.fillWidth: true
+                // }
               }
             }
 

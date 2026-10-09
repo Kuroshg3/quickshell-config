@@ -554,6 +554,7 @@ Scope {
                                     id: trayDelegate
                                     cursorShape: Qt.PointingHandCursor
                                     required property SystemTrayItem modelData
+                                    hoverEnabled: true
 
                                     Accessible.role: Accessible.Button
                                     Accessible.name: modelData.tooltipTitle || modelData.title || "System tray item"
@@ -575,11 +576,15 @@ Scope {
                                         }
                                     }
 
+                                    Rectangle{
+                                      anchors.fill: parent
+                                      color: (parent.containsMouse)? root.theme.bgSelected : "transparent"
+                                      radius: 10
                                     IconImage {
                                         anchors.centerIn: parent
-                                        source: trayDelegate.modelData.icon
+                                        source: trayDelegate.modelData.icon ?? Quickshell.shellDir + "/unknown-app.png"
                                         implicitSize: 16
-                                    }
+                                    }}
 
                                     QsMenuAnchor {
                                         id: menuAnchor
