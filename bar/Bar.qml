@@ -32,7 +32,7 @@ Scope {
         }
         return nowPlayings[0];
     }
-    property real activeNowPlayingVolume: (root.activeNowPlaying.volume * 100).toFixed(2)
+    property real activeNowPlayingVolume: (root.activeNowPlaying?.volume * 100).toFixed(2)
 
     IpcHandler {
         target: "bar"
@@ -193,7 +193,7 @@ Scope {
                                 property bool urgentBlink: true
 
                                 property bool isWsSpecial: modelData.id < 0
-                                property bool isWsNowToplevel: Hyprland.activeToplevel.workspace.id === modelData.id
+                                property bool isWsNowToplevel: Hyprland.activeToplevel?.workspace.id === modelData.id
                                 property bool isWsFocused: modelData.focused
                                 property bool isWsNowUrgent: modelData.urgent && urgentBlink
 
@@ -439,7 +439,7 @@ Scope {
                             const title = root.activeNowPlaying.trackTitle || "";
                             return "Now playing: " + (artist ? artist + " - " : "") + title;
                         }
-                        Row {
+                        RowLayout {
                             id: nowPlayingRow
                             anchors.fill: parent
                             anchors.leftMargin: 8
@@ -448,8 +448,6 @@ Scope {
 
                             Text {
                                 id: nowPlayingIconText
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.left: parent.left
                                 text: (nowPlayingContainer.isNowPlaying) ? "󰏤" : "󰐊"
                                 color: root.theme.accentPrimary
                                 font.pixelSize: panel.scale_per_monitor(18)
@@ -458,8 +456,6 @@ Scope {
 
                             Rectangle {
                                 id: nowPlayingTitleContainer
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.right: parent.right
                                 width: parent.width - nowPlayingIconText.width - parent.spacing
                                 height: parent.height
                                 color: "transparent"
