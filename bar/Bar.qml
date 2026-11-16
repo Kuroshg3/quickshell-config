@@ -16,6 +16,11 @@ Scope {
     property bool barVisible: true
     readonly property string username: Quickshell.env("USER") ?? "unknown"
 
+    SystemClock {
+      id: clock
+      precision: SystemClock.Seconds
+    }
+
     // MPRIS active nowPlaying
     property var activeNowPlaying: {
         const nowPlayings = Mpris.players.values;
@@ -105,7 +110,7 @@ Scope {
                 //left: true
                 //right: true
             }
-            width: modelData.width * 0.9
+            implicitWidth: modelData.width * 0.9
             implicitHeight: Math.pow(modelData.height, 1 / 2)
             //implicitHeight: Math.pow(1080, 1/2) ~ 33
 
@@ -351,6 +356,7 @@ Scope {
                         width: timeDate.width + 16
                         radius: 6
                         color: root.theme.bgSurface
+                        clip: true
 
                         Row {
                             id: timeDate
@@ -359,27 +365,39 @@ Scope {
 
                             Text {
                                 anchors.verticalCenter: parent.verticalCenter
-                                text: ""
-                                color: root.theme.accentPrimary
-                                font.pixelSize: panel.scale_per_monitor(12)
-                                font.family: root.font
+                                text: Qt.formatDateTime(clock.date, (mouseClock.containsMouse)?"yyyy/MM/dd": "MMM dd (ddd)")
+                                color: root.theme.textMuted
+                                font.pixelSize: panel.scale_per_monitor(16)
+                                font.family: "ProFont IIX Nerd Font"
                             }
-
+                            Text {
+                              anchors.verticalCenter: parent.verticalCenter
+                              text: "|"
+                              color: root.theme.accentPrimary
+                              visible: mouseClock.containsMouse
+                              font.pixelSize: panel.scale_per_monitor(18)
+                              font.bold: true
+                              font.family: "ProFont IIX Nerd Font"
+                            }
                             Text {
                                 anchors.verticalCenter: parent.verticalCenter
-                                text: Time.timeString
+                                text: Qt.formatDateTime(clock.date, (mouseClock.containsMouse)?"hh:mm:ss": "h:mm AP")
                                 color: root.theme.textPrimary
                                 font.pixelSize: panel.scale_per_monitor(16)
                                 font.family: "ProFont IIX Nerd Font"
                             }
-
-                            Text {
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: Time.dateString
-                                color: root.theme.textSecondary
-                                font.pixelSize: panel.scale_per_monitor(13)
-                                font.family: "ProFont IIX Nerd Font"
+                            
+                        }
+                        Behavior on width {
+                            NumberAnimation {
+                                duration: 300
+                                easing.type: Easing.InOutCubic
                             }
+                        }
+                        MouseArea {
+                          id: mouseClock
+                          anchors.fill: parent
+                          hoverEnabled: true
                         }
                     }
                 }
@@ -517,10 +535,9 @@ Scope {
                                 if (mouse.button === Qt.LeftButton) {
                                     root.activeNowPlaying.togglePlaying();
                                 }
-                            //else if (mouse.button === Qt.RightButton) {
-                            ////if (nowPlayingContainer.width === nowPlayingTitleText.width)
-                            //nowPlayingContainer.width = nowPlayingTitleText.width;
-                            //}
+                                else if (mouse.button === Qt.RightButton) {
+                                    root.activeNowPlaying.next();
+                                }
                             }
                             onWheel: mouse => {
                                 //nowPlayingTitleText.x = Math.min(0, Math.max(nowPlayingTitleText.maxScrollX, nowPlayingTitleText.x + mouse.angleDelta.y / 10));
